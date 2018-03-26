@@ -79,7 +79,7 @@ func TestFunctionCall(t *testing.T) {
 		}
 
 		functionEnv := NewEnvironment()
-		functionEnv.Set("foo", &Symbol{Value: "bar"})
+		functionEnv.Set("foo", &symbol{Value: "bar"})
 		function := &Function{
 			Parameters: []*FunctionParameter{},
 			Env:        functionEnv,
@@ -88,7 +88,7 @@ func TestFunctionCall(t *testing.T) {
 		mustCall(function.Call(context))
 
 		{
-			expected := &Symbol{Value: "bar"}
+			expected := &symbol{Value: "bar"}
 			actual, ok := evalEnv.Get("foo")
 
 			if !ok {
@@ -141,7 +141,7 @@ func TestFunctionCall(t *testing.T) {
 				},
 			}
 
-			mustCall(function.Call(context, &Integer{Value: 300}, &Symbol{Value: "sym"}))
+			mustCall(function.Call(context, &Integer{Value: 300}, &symbol{Value: "sym"}))
 
 			{
 				expected := &Integer{Value: 300}
@@ -158,7 +158,7 @@ func TestFunctionCall(t *testing.T) {
 				}
 			}
 			{
-				expected := &Symbol{Value: "sym"}
+				expected := &symbol{Value: "sym"}
 				actual, ok := evalEnv.Get("bar")
 
 				if !ok {
@@ -182,7 +182,7 @@ func TestFunctionCall(t *testing.T) {
 				},
 			}
 
-			mustCall(function.Call(context, &Integer{Value: 300}, &Symbol{Value: "sym"}))
+			mustCall(function.Call(context, &Integer{Value: 300}, &symbol{Value: "sym"}))
 
 			{
 				expected := &Integer{Value: 12}
@@ -213,7 +213,7 @@ func TestFunctionCall(t *testing.T) {
 				}
 			}
 			{
-				expected := &Symbol{Value: "sym"}
+				expected := &symbol{Value: "sym"}
 				actual, ok := evalEnv.Get("qux")
 
 				if !ok {

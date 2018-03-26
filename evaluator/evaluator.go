@@ -98,14 +98,14 @@ func Eval(node ast.Node, env object.Environment) (object.RubyObject, error) {
 	case *ast.SymbolLiteral:
 		switch value := node.Value.(type) {
 		case *ast.Identifier:
-			return &object.Symbol{Value: value.Value}, nil
+			return object.NewSymbol(value.Value), nil
 		case *ast.StringLiteral:
 			str, err := Eval(value, env)
 			if err != nil {
 				return nil, errors.WithMessage(err, "eval symbol literal string")
 			}
 			if str, ok := str.(*object.String); ok {
-				return &object.Symbol{Value: str.Value}, nil
+				return object.NewSymbol(str.Value), nil
 			}
 			panic(errors.WithStack(
 				fmt.Errorf("error while parsing SymbolLiteral: expected *object.String, got %T", str),
@@ -149,7 +149,7 @@ func Eval(node ast.Node, env object.Environment) (object.RubyObject, error) {
 			envInfo, _ := object.EnvStat(env, context)
 			envInfo.Env().Set(node.Receiver.Value, extended)
 		}
-		return &object.Symbol{Value: node.Name.Value}, nil
+		return object.NewSymbol(node.Name.Value), nil
 	case *ast.BlockExpression:
 		params := node.Parameters
 		body := node.Body

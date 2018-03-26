@@ -820,7 +820,7 @@ func TestModuleObject(t *testing.T) {
 				end`,
 				"Foo",
 				map[string]string{"a": "fn() {\nfoo\n}"},
-				&object.Symbol{Value: "a"},
+				object.NewSymbol("a"),
 			},
 			{
 				`module Foo
@@ -973,7 +973,7 @@ func TestClassObject(t *testing.T) {
 			"Foo",
 			"Object",
 			map[string]string{"a": "fn() {\nfoo\n}"},
-			&object.Symbol{Value: "a"},
+			object.NewSymbol("a"),
 		},
 		{
 			`class Foo
@@ -1092,12 +1092,11 @@ func TestFunctionObject(t *testing.T) {
 			env.Set("self", &object.Self{RubyObject: &object.Object{}, Name: "main"})
 			evaluated, err := testEval(tt.input, env)
 			checkError(t, err)
-			sym, ok := evaluated.(*object.Symbol)
-			if !ok {
-				t.Fatalf("object is not Symbol. got=%T (%+v)", evaluated, evaluated)
+			if evaluated.Type() != object.SYMBOL_OBJ {
+				t.Fatalf("object is not symbol. got=%T (%+v)", evaluated, evaluated)
 			}
-			if sym.Value != "foo" {
-				t.Logf("Expected returned symbol to have value %q, got %q", "foo", sym.Value)
+			if evaluated != object.NewSymbol("foo") {
+				t.Logf("Expected returned symbol to have value %q, got %q", "foo", evaluated)
 				t.Fail()
 			}
 
@@ -1325,13 +1324,12 @@ func TestSymbolLiteral(t *testing.T) {
 
 	evaluated, err := testEval(input)
 	checkError(t, err)
-	sym, ok := evaluated.(*object.Symbol)
-	if !ok {
-		t.Fatalf("object is not Symbol. got=%T (%+v)", evaluated, evaluated)
+	if evaluated.Type() != object.SYMBOL_OBJ {
+		t.Fatalf("object is not symbol. got=%T (%+v)", evaluated, evaluated)
 	}
 
-	if sym.Value != "foobar" {
-		t.Errorf("Symbol has wrong value. got=%q", sym.Value)
+	if evaluated != object.NewSymbol("foobar") {
+		t.Errorf("symbol has wrong value. got=%q", evaluated)
 	}
 }
 
@@ -1702,19 +1700,18 @@ func testIntegerObject(t *testing.T, obj object.RubyObject, expected int64) bool
 
 func testSymbolObject(t *testing.T, obj object.RubyObject, expected string) bool {
 	t.Helper()
-	result, ok := obj.(*object.Symbol)
-	if !ok {
+	if obj.Type() != object.SYMBOL_OBJ {
 		t.Errorf(
-			"object is not Symbol. got=%T (%+v)",
+			"object is not symbol. got=%T (%+v)",
 			obj,
 			obj,
 		)
 		return false
 	}
-	if result.Value != expected {
+	if obj != object.NewSymbol(expected) {
 		t.Errorf(
 			"object has wrong value. got=%v, want=%v",
-			result.Value,
+			obj,
 			expected,
 		)
 		return false

@@ -23,7 +23,7 @@ func TestExceptionInitialize(t *testing.T) {
 			checkResult(t, result, &Exception{message: "err"})
 		})
 		t.Run("other object", func(t *testing.T) {
-			result, err := exceptionInitialize(context, &Symbol{Value: "symbol"})
+			result, err := exceptionInitialize(context, NewSymbol("symbol"))
 
 			checkError(t, err, nil)
 

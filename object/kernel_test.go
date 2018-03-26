@@ -47,7 +47,7 @@ func TestKernelMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -100,7 +100,7 @@ func TestKernelMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -161,7 +161,7 @@ func TestKernelMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -214,7 +214,7 @@ func TestKernelMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()

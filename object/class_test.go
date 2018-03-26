@@ -251,7 +251,7 @@ func TestClassNew(t *testing.T) {
 		eval:     func(ast.Node, Environment) (RubyObject, error) { return nil, nil },
 	}
 
-	args := []RubyObject{&String{"foo"}, &Symbol{"bar"}, &Integer{7}}
+	args := []RubyObject{&String{"foo"}, &symbol{"bar"}, &Integer{7}}
 
 	result, err := classNew(context, args...)
 	if err != nil {
@@ -314,7 +314,7 @@ func TestClassInitialize(t *testing.T) {
 		env:      env,
 	}
 
-	result, err := classInitialize(context, &String{"foo"}, &Symbol{"bar"}, &Integer{7})
+	result, err := classInitialize(context, &String{"foo"}, &symbol{"bar"}, &Integer{7})
 	if err != nil {
 		t.Logf("Expected no error, got %T:%v\n", err, err)
 		t.Fail()

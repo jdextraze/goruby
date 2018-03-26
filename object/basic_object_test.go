@@ -6,7 +6,7 @@ import (
 
 func TestBasicObjectMethodMissing(t *testing.T) {
 	context := &callContext{receiver: NIL}
-	result, err := basicObjectMethodMissing(context, &Symbol{"foo"})
+	result, err := basicObjectMethodMissing(context, &symbol{"foo"})
 
 	checkResult(t, result, nil)
 

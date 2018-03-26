@@ -263,7 +263,7 @@ func TestModuleInstanceMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -314,7 +314,7 @@ func TestModuleInstanceMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -365,7 +365,7 @@ func TestModuleInstanceMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -416,7 +416,7 @@ func TestModuleInstanceMethods(t *testing.T) {
 
 		var methods []string
 		for i, elem := range array.Elements {
-			sym, ok := elem.(*Symbol)
+			sym, ok := elem.(*symbol)
 			if !ok {
 				t.Logf("Expected all elements to be symbols, got %T at index %d", elem, i)
 				t.Fail()
@@ -483,7 +483,7 @@ func TestModuleAppendFeatures(t *testing.T) {
 	t.Run("add constants", func(t *testing.T) {
 		outer := NewEnvironment()
 		outer.Set("A", &String{Value: "foo"})
-		outer.Set("C", &Symbol{Value: "bar"})
+		outer.Set("C", &symbol{Value: "bar"})
 		env := NewEnclosedEnvironment(outer)
 		env.Set("A", &Integer{Value: 4})
 		env.Set("B", &Integer{Value: 6})
@@ -518,12 +518,12 @@ func TestModuleAppendFeatures(t *testing.T) {
 			t.Fail()
 		}
 
-		checkResult(t, &Symbol{Value: "bar"}, c)
+		checkResult(t, &symbol{Value: "bar"}, c)
 	})
 	t.Run("add instance variables", func(t *testing.T) {
 		outer := NewEnvironment()
 		outer.Set("@foo", &String{Value: "foo"})
-		outer.Set("@qux", &Symbol{Value: "bar"})
+		outer.Set("@qux", &symbol{Value: "bar"})
 		env := NewEnclosedEnvironment(outer)
 		env.Set("@foo", &Integer{Value: 4})
 		env.Set("@bar", &Integer{Value: 6})
@@ -558,12 +558,12 @@ func TestModuleAppendFeatures(t *testing.T) {
 			t.Fail()
 		}
 
-		checkResult(t, &Symbol{Value: "bar"}, c)
+		checkResult(t, &symbol{Value: "bar"}, c)
 	})
 	t.Run("does not add local variables", func(t *testing.T) {
 		outer := NewEnvironment()
 		outer.Set("foo", &String{Value: "foo"})
-		outer.Set("qux", &Symbol{Value: "bar"})
+		outer.Set("qux", &symbol{Value: "bar"})
 		env := NewEnclosedEnvironment(outer)
 		env.Set("foo", &Integer{Value: 4})
 		env.Set("bar", &Integer{Value: 6})
@@ -648,9 +648,9 @@ func TestModuleInclude(t *testing.T) {
 
 		checkError(t, err, NewWrongArgumentTypeError(&Module{}, &Integer{}))
 
-		_, err = moduleInclude(context, NewModule("X", nil), &Symbol{Value: "d"})
+		_, err = moduleInclude(context, NewModule("X", nil), &symbol{Value: "d"})
 
-		checkError(t, err, NewWrongArgumentTypeError(&Module{}, &Symbol{}))
+		checkError(t, err, NewWrongArgumentTypeError(&Module{}, &symbol{}))
 	})
 	t.Run("return value", func(t *testing.T) {
 		context := &callContext{

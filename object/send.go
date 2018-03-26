@@ -25,7 +25,7 @@ func Send(context CallContext, method string, args ...RubyObject) (RubyObject, e
 	}
 
 	methodMissingArgs := append(
-		[]RubyObject{&Symbol{method}},
+		[]RubyObject{&symbol{method}},
 		args...,
 	)
 
@@ -67,5 +67,5 @@ func methodMissing(context CallContext, args ...RubyObject) (RubyObject, error) 
 		}
 		return fn.Call(context, args...)
 	}
-	return nil, NewNoMethodError(context.Receiver(), args[0].(*Symbol).Value)
+	return nil, NewNoMethodError(context.Receiver(), args[0].(*symbol).Value)
 }

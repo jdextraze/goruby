@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"unicode"
+	"log"
 )
 
 var moduleClass RubyClassObject = &class{
@@ -58,6 +59,11 @@ func (m *Module) Class() RubyClass {
 	}
 	return moduleClass
 }
+
+func (m *Module) Name() string {
+	return m.name
+}
+
 func (m *Module) hashKey() hashKey {
 	h := fnv.New64a()
 	h.Write([]byte(m.name))
@@ -69,6 +75,12 @@ func (m *Module) addMethod(name string, method RubyMethod) {
 }
 
 var moduleMethods = map[string]RubyMethod{
+	"included":                   withArity(1, privateMethod(dummyObj)),
+	"extended":                   withArity(1, privateMethod(dummyObj)),
+	"prepended":                  withArity(1, privateMethod(dummyObj)),
+	"method_added":               withArity(1, privateMethod(dummyObj)),
+	"method_removed":             withArity(1, privateMethod(dummyObj)),
+	"method_undefined":           withArity(1, privateMethod(dummyObj)),
 	"ancestors":                  withArity(0, publicMethod(moduleAncestors)),
 	"included_modules":           withArity(0, publicMethod(moduleIncludedModules)),
 	"instance_methods":           publicMethod(modulePublicInstanceMethods),
@@ -76,9 +88,24 @@ var moduleMethods = map[string]RubyMethod{
 	"protected_instance_methods": publicMethod(moduleProtectedInstanceMethods),
 	"private_instance_methods":   publicMethod(modulePrivateInstanceMethods),
 	"include":                    publicMethod(moduleInclude),
-	"append_features":            withArity(1, privateMethod(moduleAppendFeatures)),
 	"to_s":                       withArity(0, publicMethod(moduleToS)),
-	"inspect":                    withArity(0, publicMethod(moduleToS)),
+}
+
+func init() {
+	moduleMethods["append_features"] = withArity(1, privateMethod(moduleAppendFeatures))
+	moduleMethods["name"] = withArity(0, publicMethod(moduleName))
+}
+
+type hasName interface {
+	Name() string
+}
+
+func moduleName(context CallContext, _ ...RubyObject) (RubyObject, error) {
+	obj, ok := context.Receiver().(hasName)
+	if !ok {
+		return nil, NewArgumentError("invalid receiver")
+	}
+	return &String{obj.Name()}, nil
 }
 
 func moduleToS(context CallContext, args ...RubyObject) (RubyObject, error) {
@@ -184,16 +211,22 @@ func moduleInclude(context CallContext, args ...RubyObject) (RubyObject, error) 
 	if len(args) == 0 {
 		return nil, NewWrongNumberOfArgumentsError(1, 0)
 	}
-	modules := []RubyObject{}
+	modules := make([]RubyObject, len(args))
+	i := len(args) - 1
 	for _, a := range args {
 		mod, ok := a.(*Module)
 		if !ok {
 			return nil, NewWrongArgumentTypeError(&Module{}, a)
 		}
-		modules = append([]RubyObject{mod}, modules...)
+		modules[i] = mod
+		i--
+	}
+	self, ok := context.Receiver().(*Self)
+	if !ok {
+		return nil, NewPrivateNoMethodError(context.Receiver(), "append_features")
 	}
 	for _, m := range modules {
-		_, err := Send(context, "append_features", m)
+		_, err := moduleAppendFeatures(NewCallContext(context.Env(), m), self.RubyObject)
 		if err != nil {
 			return nil, err
 		}
@@ -202,9 +235,9 @@ func moduleInclude(context CallContext, args ...RubyObject) (RubyObject, error) 
 }
 
 func moduleAppendFeatures(context CallContext, args ...RubyObject) (RubyObject, error) {
-	module, ok := args[0].(*Module)
+	module, ok := args[0].(canAddMethod)
 	if !ok {
-		return nil, NewWrongArgumentTypeError(module, args[0])
+		return nil, NewArgumentError("")// NewWrongArgumentTypeError(module, args[0])
 	}
 	self, ok := context.Receiver().(*Self)
 	if !ok {
@@ -224,12 +257,17 @@ func moduleAppendFeatures(context CallContext, args ...RubyObject) (RubyObject, 
 		for k, v := range e.GetAll() {
 			firstChar := bytes.Runes([]byte(k))[0]
 			if unicode.IsUpper(firstChar) || firstChar == '@' {
-				module.Set(k, v)
+				args[0].(Environment).Set(k, v)
 			}
 		}
 	}
 	for k, v := range self.RubyObject.Class().Methods().GetAll() {
 		module.addMethod(k, v)
 	}
-	return module, nil
+	log.Printf(">>> %v\n", module)
+	return args[0], nil
+}
+
+type canAddMethod interface {
+	addMethod(name string, method RubyMethod)
 }

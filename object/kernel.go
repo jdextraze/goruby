@@ -20,19 +20,60 @@ func init() {
 }
 
 var kernelMethodSet = map[string]RubyMethod{
-	"to_s":              withArity(0, publicMethod(kernelToS)),
-	"nil?":              withArity(0, publicMethod(kernelIsNil)),
-	"methods":           publicMethod(kernelMethods),
-	"public_methods":    publicMethod(kernelPublicMethods),
-	"protected_methods": publicMethod(kernelProtectedMethods),
-	"private_methods":   publicMethod(kernelPrivateMethods),
-	"class":             withArity(0, publicMethod(kernelClass)),
-	"puts":              privateMethod(kernelPuts),
-	"require":           withArity(1, privateMethod(kernelRequire)),
-	"extend":            publicMethod(kernelExtend),
-	"block_given?":      withArity(0, privateMethod(kernelBlockGiven)),
-	"tap":               publicMethod(kernelTap),
-	"raise":             privateMethod(kernelRaise),
+	"nil?": withArity(0, publicMethod(kernelIsNil)),
+	"===":  withArity(1, publicMethod(rbEqual)),
+	"=~":   withArity(1, publicMethod(notImplemented)),
+	"!~":   withArity(1, publicMethod(notImplemented)),
+	"eql?": withArity(1, publicMethod(basicObjectEqual)),
+	"hash": withArity(0, publicMethod(notImplemented)),
+	"<=>":  withArity(1, publicMethod(notImplemented)),
+
+	"class":            withArity(0, publicMethod(kernelClass)),
+	"singleton_class":  withArity(0, publicMethod(notImplemented)),
+	"clone":            publicMethod(notImplemented),
+	"dup":              withArity(0, publicMethod(notImplemented)),
+	"itself":           withArity(0, publicMethod(notImplemented)),
+	"yield_self":       withArity(0, publicMethod(notImplemented)),
+	"initialize_copy":  withArity(1, publicMethod(notImplemented)),
+	"initialize_dup":   withArity(1, publicMethod(notImplemented)),
+	"initialize_clone": withArity(1, publicMethod(notImplemented)),
+
+	"taint":      withArity(0, publicMethod(notImplemented)),
+	"tainted?":   withArity(0, publicMethod(notImplemented)),
+	"untaint":    withArity(0, publicMethod(notImplemented)),
+	"untrust":    withArity(0, publicMethod(notImplemented)),
+	"untrusted?": withArity(0, publicMethod(notImplemented)),
+	"trust":      withArity(0, publicMethod(notImplemented)),
+	"freeze":     withArity(0, publicMethod(notImplemented)),
+	"frozen":     withArity(0, publicMethod(notImplemented)),
+
+	"to_s":                       withArity(0, publicMethod(kernelToS)),
+	"inspect":                    withArity(0, publicMethod(kernelInspect)),
+	"methods":                    publicMethod(kernelMethods),
+	"singleton_methods":          publicMethod(notImplemented),
+	"protected_methods":          publicMethod(kernelProtectedMethods),
+	"private_methods":            publicMethod(kernelPrivateMethods),
+	"public_methods":             publicMethod(kernelPublicMethods),
+	"instance_variables":         withArity(0, publicMethod(notImplemented)),
+	"instance_variable_get":      withArity(1, publicMethod(notImplemented)),
+	"instance_variable_set":      withArity(2, publicMethod(notImplemented)),
+	"instance_variable_defined?": withArity(1, publicMethod(notImplemented)),
+	"remove_instance_variable":   withArity(1, publicMethod(notImplemented)),
+
+	"instance_of?": withArity(1, publicMethod(notImplemented)),
+	"kind_of?":     withArity(1, publicMethod(notImplemented)),
+	"is_a?":        withArity(1, publicMethod(notImplemented)),
+	"tap":          publicMethod(kernelTap),
+
+	"puts":         privateMethod(kernelPuts),
+	"require":      withArity(1, privateMethod(kernelRequire)),
+	"extend":       publicMethod(kernelExtend),
+	"block_given?": withArity(0, privateMethod(kernelBlockGiven)),
+	"raise":        privateMethod(kernelRaise),
+}
+
+func kernelInspect(context CallContext, args ...RubyObject) (RubyObject, error) {
+	return &String{context.Receiver().(inspectable).Inspect()}, nil
 }
 
 func kernelToS(context CallContext, args ...RubyObject) (RubyObject, error) {

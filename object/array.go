@@ -59,6 +59,8 @@ var arrayClassMethods = map[string]RubyMethod{}
 var arrayMethods = map[string]RubyMethod{
 	"push":    publicMethod(arrayPush),
 	"unshift": publicMethod(arrayUnshift),
+
+	"include?": withArity(1, publicMethod(arrayInclude)),
 }
 
 func arrayPush(context CallContext, args ...RubyObject) (RubyObject, error) {
@@ -71,4 +73,15 @@ func arrayUnshift(context CallContext, args ...RubyObject) (RubyObject, error) {
 	array, _ := context.Receiver().(*Array)
 	array.Elements = append(args, array.Elements...)
 	return array, nil
+}
+
+func arrayInclude(context CallContext, args ...RubyObject) (RubyObject, error) {
+	array, _ := context.Receiver().(*Array)
+	value := args[0]
+	for _, element := range array.Elements {
+		if rubyEqual(element, value) {
+			return TRUE, nil
+		}
+	}
+	return FALSE, nil
 }

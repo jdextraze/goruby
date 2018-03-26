@@ -114,6 +114,7 @@ func (c *class) Name() string { return c.name }
 var classClassMethods = map[string]RubyMethod{}
 
 var classInstanceMethods = map[string]RubyMethod{
+	"inherited": withArity(1, privateMethod(dummyObj)),
 	"superclass": withArity(0, publicMethod(classSuperclass)),
 	"new":        publicMethod(classNew),
 	"initialize": privateMethod(classInitialize),

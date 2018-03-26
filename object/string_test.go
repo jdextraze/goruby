@@ -23,7 +23,7 @@ func TestString_hashKey(t *testing.T) {
 
 func Test_stringify(t *testing.T) {
 	t.Run("object with regular `to_s`", func(t *testing.T) {
-		obj := &Symbol{Value: "sym"}
+		obj := &symbol{Value: "sym"}
 
 		res, err := stringify(obj)
 
